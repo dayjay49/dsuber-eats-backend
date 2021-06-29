@@ -6,7 +6,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 @Module({
   imports: [
     GraphQLModule.forRoot({
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      autoSchemaFile: true,
     }),
     RestaurantsModule,
   ],
