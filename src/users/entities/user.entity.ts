@@ -17,7 +17,7 @@ enum UserRole {
 
 registerEnumType(UserRole, { name: 'UserRole' });
 
-@InputType({ isAbstract: true})
+@InputType({ isAbstract: true })
 @ObjectType()
 @Entity()
 export class User extends CoreEntity {
@@ -30,7 +30,7 @@ export class User extends CoreEntity {
   @Field(type => String)
   password: string;
 
-  @Column({type: 'enum', enum: UserRole})
+  @Column({ type: 'enum', enum: UserRole })
   @Field(type => UserRole)
   @IsEnum(UserRole)
   role: UserRole;
@@ -44,4 +44,14 @@ export class User extends CoreEntity {
       throw new InternalServerErrorException();
     }
   }
+
+  async checkPassword(aPassword: string): Promise<boolean> {
+    try {
+      const ok = await bcrypt.compare(aPassword, this.password);
+      return ok;
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
+  };
 }
