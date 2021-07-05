@@ -1,4 +1,5 @@
-import { Field,
+import {
+  Field,
   InputType,
   ObjectType,
   registerEnumType,
