@@ -2,11 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CreateAccountInput, CreateAccountOutput } from "./dtos/create-account.dto";
-import { LoginInput } from "./dtos/login.dto";
+import { LoginInput, LoginOutput } from "./dtos/login.dto";
 import { User } from "./entities/user.entity";
 import { JwtService } from "src/jwt/jwt.service";
-import { EditProfileInput } from "./dtos/edit-profile.dto";
+import { EditProfileInput, EditProfileOutput } from "./dtos/edit-profile.dto";
 import { Verification } from "./entities/verification.entity";
+import { UserProfileOutput } from "./dtos/user-profile.dto";
+import { VerifyEmailOutput } from "./dtos/verify-email.dto";
 
 @Injectable()
 export class UsersService {
@@ -43,10 +45,7 @@ export class UsersService {
     }
   }
 
-  async login({
-    email,
-    password,
-  }: LoginInput): Promise<{ ok: boolean; error?: string; token?: string }> {
+  async login({ email, password }: LoginInput): Promise<LoginOutput> {
     try {
       // find the user with the email
       const user = await this.users.findOne(
@@ -81,31 +80,49 @@ export class UsersService {
     }
   }
 
-  async findById(id: number): Promise<User> {
-    return this.users.findOne({ id });
+  async findById(id: number): Promise<UserProfileOutput> {
+    try {
+      const user = await this.users.findOne({ id });
+      if (user) {
+        return {
+          ok: true,
+          user,
+        };
+      }
+    } catch (error) {
+      return { ok: false, error: 'User Not Found' };
+    }
   }
 
-  async editProfile(userId: number, { email, password }: EditProfileInput) {
-    // since you can not call this function without being logged in, it is okay not to
-    // check if the user is in db or not 
-    // (it is called in users.services and it has a authguard decorator there)
-    const user = await this.users.findOne(userId);
-    if (email) {
-      // email is changed but not verified yet
-      user.email = email;
-      user.verified = false;
-      await this.verifications.save(this.verifications.create({ user }));
+  async editProfile(
+    userId: number,
+    { email, password }: EditProfileInput,
+  ): Promise<EditProfileOutput> {
+    try {
+      // since you can not call this function without being logged in, it is okay not to
+      // check if the user is in db or not 
+      // (it is called in users.resolvers and it has a authguard decorator there)
+      const user = await this.users.findOne(userId);
+      if (email) {
+        // email is changed but not verified yet
+        user.email = email;
+        user.verified = false;
+        // verify email then update verification entity
+        await this.verifications.save(this.verifications.create({ user }));
+      }
+      if (password) {
+        user.password = password;
+      }
+      await this.users.save(user);
+      return { ok: true };
+      // return this.users.update(userId, { ...editProfileInput });
+      // using the code above did not trigger the @BeforeInsert decorator of the hashPassword function
+    } catch (e) {
+      return { ok: false, error: 'Could not update profile.'};
     }
-    if (password) {
-      user.password = password;
-    }
-    return this.users.save(user);
-
-    // return this.users.update(userId, { ...editProfileInput });
-    // using the code above did not trigger the @BeforeInsert decorator of the hashPassword function
   };
 
-  async verifyEmail(code: string): Promise<boolean> {
+  async verifyEmail(code: string): Promise<VerifyEmailOutput> {
     try {
       // look for verification corresponding to `code`
       const verification = await this.verifications.findOne(
@@ -116,12 +133,10 @@ export class UsersService {
         verification.user.verified = true;
         console.log(verification.user);
         this.users.save(verification.user);
-        return true;
+        return { ok: true };
       }
-      throw new Error();
     } catch (error) {
-      console.log(error);
-      return false;
+      return { ok: false, error };
     }
   }
 };
