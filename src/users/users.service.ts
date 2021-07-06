@@ -49,7 +49,10 @@ export class UsersService {
   }: LoginInput): Promise<{ ok: boolean; error?: string; token?: string }> {
     try {
       // find the user with the email
-      const user = await this.users.findOne({ email });
+      const user = await this.users.findOne(
+        { email },
+        { select: ['id', 'password'] },
+      );
       if (!user) {
         return {
           ok: false,
@@ -88,10 +91,10 @@ export class UsersService {
     // (it is called in users.services and it has a authguard decorator there)
     const user = await this.users.findOne(userId);
     if (email) {
-      // verify email
-
-      // change email only upon verification
+      // email is changed but not verified yet
       user.email = email;
+      user.verified = false;
+      await this.verifications.save(this.verifications.create({ user }));
     }
     if (password) {
       user.password = password;
@@ -101,4 +104,24 @@ export class UsersService {
     // return this.users.update(userId, { ...editProfileInput });
     // using the code above did not trigger the @BeforeInsert decorator of the hashPassword function
   };
+
+  async verifyEmail(code: string): Promise<boolean> {
+    try {
+      // look for verification corresponding to `code`
+      const verification = await this.verifications.findOne(
+        { code },
+        { relations: ['user'] },
+      );
+      if (verification) {
+        verification.user.verified = true;
+        console.log(verification.user);
+        this.users.save(verification.user);
+        return true;
+      }
+      throw new Error();
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
 };
