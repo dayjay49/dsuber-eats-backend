@@ -79,6 +79,9 @@ export class UsersService {
     // (it is called in users.services and it has a authguard decorator there)
     const user = await this.users.findOne(userId);
     if (email) {
+      // verify email
+
+      // change email only upon verification
       user.email = email;
     }
     if (password) {
