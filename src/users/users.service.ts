@@ -79,10 +79,10 @@ export class UserService {
         ok: true,
         token,
       };
-    } catch (error) {
+    } catch (err) {
       return {
         ok: false,
-        error,
+        error: "Can't log user in.",
       };
     }
   }
