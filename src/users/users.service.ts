@@ -1,7 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { CreateAccountInput, CreateAccountOutput } from "./dtos/create-account.dto";
+import {
+  CreateAccountInput,
+  CreateAccountOutput,
+} from "./dtos/create-account.dto";
 import { LoginInput, LoginOutput } from "./dtos/login.dto";
 import { User } from "./entities/user.entity";
 import { JwtService } from "src/jwt/jwt.service";
@@ -12,7 +15,7 @@ import { VerifyEmailOutput } from "./dtos/verify-email.dto";
 import { MailService } from "src/mail/mail.service";
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly users: Repository<User>,
