@@ -34,7 +34,6 @@ export class UserService {
       // check new user
       const exists = await this.users.findOne({ email });
       if (exists) {
-        // make error
         return { ok: false, error: 'There is a user with that email already'};
       }
       const newUser = await this.users.save(
