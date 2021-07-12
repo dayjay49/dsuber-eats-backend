@@ -25,8 +25,10 @@ export class JwtMiddleware implements NestMiddleware {
         const decoded = this.jwtService.verify(token.toString());
         if (typeof decoded === 'object' && decoded.hasOwnProperty('id')) {
           // using the id decoded from the token, look for the corresponding user
-          const user = await this.userService.findById(decoded['id']);
-          req['user'] = user;
+          const { user, ok } = await this.userService.findById(decoded['id']);
+          if (ok) {
+            req['user'] = user;
+          }
         }
       } catch (e) {}
     }

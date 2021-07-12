@@ -111,6 +111,7 @@ export class UserService {
         // email is changed but not verified yet
         user.email = email;
         user.verified = false;
+        await this.verifications.delete({ user: { id: user.id } });
         // verify email then update verification entity
         const verification = await this.verifications.save(
           this.verifications.create({ user }),
@@ -125,7 +126,8 @@ export class UserService {
       // return this.users.update(userId, { ...editProfileInput });
       // using the code above did not trigger the @BeforeInsert decorator of the hashPassword function
     } catch (e) {
-      return { ok: false, error: 'Could not update profile.'};
+      // console.log(e);
+      return { ok: false, error: 'Could not update profile.' };
     }
   };
 
