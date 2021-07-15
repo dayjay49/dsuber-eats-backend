@@ -30,7 +30,7 @@ export class RestaurantService {
       const categoryName = createRestaurantInput.categoryName
         .trim()
         .toLowerCase()
-        .replace(/ +g/, '');   // -> this one is to remove any multiple whitespaces in the middle
+        .replace(/ +g/, ''); // -> this one is to remove any multiple whitespaces in the middle
       // using regex to replace all the spaces of the given string
       const categorySlug = categoryName.replace(/ /g, '-');
 
