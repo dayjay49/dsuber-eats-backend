@@ -21,12 +21,17 @@ The Backend of DSuber Eats Clone
 - See Categories
 - See Restaurants by Category (pagination)
 - See Restaurants (pagination)
-- Search Restaurants
 - See Restaurant
+- Search Restaurants
 
 - Create Dish
 - Edit Dish
 - Delete Dish
+
+- Orders CRUD
+- Orders Subscription (Owner, Customer, Delivery)
+
+- Payments (CRON)
 
 ## User Model:
 
