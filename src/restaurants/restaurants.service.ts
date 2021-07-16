@@ -6,6 +6,7 @@ import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from './dtos/create-restaurant.dto';
+import { DeleteRestaurantInput, DeleteRestaurantOutput } from './dtos/delete-restaurant.dto';
 import {
   EditRestaurantInput,
   EditRestaurantOutput,
@@ -81,6 +82,30 @@ export class RestaurantService {
       return { ok: true };
     } catch (err) {
       return { ok: false, error: 'Could not edit restaurant' };
+    }
+  }
+
+  async deleteRestaurant(
+    owner: User,
+    { restaurantId }: DeleteRestaurantInput,
+  ): Promise<DeleteRestaurantOutput> {
+    try {
+      // get the restaurant to edit
+      const restaurant = await this.restaurants.findOne(restaurantId);
+      if (!restaurant) {
+        return { ok: false, error: 'Restaurant not found' };
+      }
+      // get owner of restaurant
+      if (owner.id !== restaurant.ownerId) {
+        return {
+          ok: false,
+          error: 'You can not delete a restaurant you do not own.',
+        };
+      }
+      await this.restaurants.delete({ id: restaurantId });
+      return { ok: true };
+    } catch (err) {
+      return { ok: false, error: 'Could not delete restaurant.' };
     }
   }
 }
