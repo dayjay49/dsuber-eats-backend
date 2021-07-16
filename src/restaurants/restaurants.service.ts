@@ -69,6 +69,8 @@ export class RestaurantService {
           editRestaurantInput.categoryName,
         );
       }
+      // always remember that if you do NOT pass in an ID for the `save` method,
+      // typeORM will create a new entity
       await this.restaurants.save([
         {
           id: editRestaurantInput.restaurantId,

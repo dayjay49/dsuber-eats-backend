@@ -4,6 +4,10 @@ The Backend of DSuber Eats Clone
 
 ## Restaurant Model:
 
+- id
+- createdAt
+- updatedAt
+
 - name
 - category
 - address
