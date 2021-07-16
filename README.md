@@ -21,6 +21,7 @@ The Backend of DSuber Eats Clone
 - See Categories
 - See Restaurants by Category (pagination)
 - See Restaurants (pagination)
+- Search Restaurants
 - See Restaurant
 
 - Create Dish
