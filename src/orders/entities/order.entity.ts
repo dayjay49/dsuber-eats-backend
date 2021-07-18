@@ -3,7 +3,7 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { Dish } from 'src/restaurants/entities/dish.entity';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, RelationId } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
 
 export enum OrderStatus {
   Pending = 'Pending',
@@ -44,9 +44,9 @@ export class Order extends CoreEntity {
   @JoinTable()
   dishes: Dish[];
 
-  @Field(type => Float)
-  @Column()
-  total: number;
+  @Field(type => Float, { nullable: true })
+  @Column({ nullable: true })
+  total?: number;
 
   @Field(type => OrderStatus)
   @Column({ type: 'enum', enum: OrderStatus })
