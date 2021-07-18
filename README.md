@@ -2,6 +2,13 @@
 
 The Backend of DSuber Eats Clone
 
+## Orders CRUD:
+
+- Create Order
+- Orders Subscription (Owner, Customer, Delivery)
+
+- Payments (CRON)
+
 ## Restaurant Model:
 
 - id
@@ -27,11 +34,6 @@ The Backend of DSuber Eats Clone
 - Create Dish
 - Edit Dish
 - Delete Dish
-
-- Orders CRUD
-- Orders Subscription (Owner, Customer, Delivery)
-
-- Payments (CRON)
 
 ## User Model:
 
