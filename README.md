@@ -5,6 +5,8 @@ The Backend of DSuber Eats Clone
 ## Orders CRUD:
 
 - Create Order
+- Get Order/Orders
+- Edit Order
 - Orders Subscription (Owner, Customer, Delivery)
 
 - Payments (CRON)
