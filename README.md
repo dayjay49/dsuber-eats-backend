@@ -8,7 +8,11 @@ The Backend of DSuber Eats Clone
 - Get Order/Orders
 - Edit Order
 
-- Orders Subscription (Owner, Customer, Delivery)
+- Orders Subscription:
+    - Pending Orders (s: newOrder) (t: createOrder(newOrder)) 
+        - createOrder is our resolver that will trigger the 'newOrder' event
+    - Order Status (s: orderUpdate) (t: editOrder(orderUpdate)) -> (Owner, Client/Customer, Driver)
+    - Pending Pickup Order (s: orderUpdate) (t: editOrder(orderUpdate)) -> (Driver)
 
 - Payments (CRON)
 

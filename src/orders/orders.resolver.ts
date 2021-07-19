@@ -65,9 +65,11 @@ export class OrderResolver {
 
   @Subscription(returns => String, {
     filter: ({ readyPotato }, { potatoId }) => {
-      // console.log(payload, variables, context);
+      // console.log(payload, variables/input arguments, context);
       return readyPotato === potatoId;
     },
+    resolve: ({ readyPotato }) =>
+      `Your potato with the id ${readyPotato} is ready!`,
   })
   @Role(['Any'])
   readyPotato(@Args('potatoId') potatoId: number) {
