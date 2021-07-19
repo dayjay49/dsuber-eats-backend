@@ -27,8 +27,13 @@ import { OrderItem } from './orders/entities/order-item.entity';
   imports: [
     GraphQLModule.forRoot({
       playground: process.env.NODE_ENV !== 'production',
+      installSubscriptionHandlers: true,
       autoSchemaFile: true,
-      context: ({ req }) => ({ user: req['user'] }),
+      context: ({ req }) => {
+        // is this the source of the N+1 problem...? idk..
+        // console.log(req);
+        return { user: req['user'] };
+      },
     }),
     ConfigModule.forRoot({
       isGlobal: true,
