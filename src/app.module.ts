@@ -26,15 +26,16 @@ import { OrderItem } from './orders/entities/order-item.entity';
 @Module({
   imports: [
     GraphQLModule.forRoot({
+      playground: process.env.NODE_ENV !== 'production',
       autoSchemaFile: true,
       context: ({ req }) => ({ user: req['user'] }),
     }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env.test',
-      ignoreEnvFile: process.env.NODE_ENV === 'prod',
+      ignoreEnvFile: process.env.NODE_ENV === 'production',
       validationSchema: Joi.object({
-        NODE_ENV: Joi.string().valid('dev', 'prod', 'test'),
+        NODE_ENV: Joi.string().valid('dev', 'production', 'test'),
         DB_HOST: Joi.string().required(),
         DB_PORT: Joi.string().required(),
         DB_USERNAME: Joi.string().required(),
