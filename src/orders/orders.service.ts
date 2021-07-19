@@ -100,12 +100,15 @@ export class OrderService {
         orders = await this.orders.find({
           where: {
             customer: user,
+            // recall that the line below make sure `status` is not undefined
+            ...(status && { status }),
           },
         });
       } else if (user.role === UserRole.Delivery) {
         orders = await this.orders.find({
           where: {
             driver: user,
+            ...(status && { status }),
           },
         });
       } else if (user.role === UserRole.Owner) {
@@ -117,8 +120,11 @@ export class OrderService {
         });
         // only get orders of restaurants that have orders... (some restaurants might not have any orders)
         orders = restaurants.map(restaurant => restaurant.orders).flat(1); //.flat(1)
-        console.log(orders);
+        if (status) {
+          orders = orders.filter(order => order.status === status);
+        }
       }
+      // console.log(orders);
       return { ok: true, orders };
     } catch (err) {
       return { ok: false, error: 'Could not get orders' };
