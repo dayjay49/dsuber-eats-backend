@@ -44,7 +44,7 @@ export class OrderResolver {
   }
 
   @Mutation(returns => EditOrderOutput)
-  @Role(['Any'])  // really anybody tho? driver can use this?
+  @Role(['Any'])
   async editOrder(
     @AuthUser() user: User,
     @Args('input') editOrderInput: EditOrderInput,
@@ -61,7 +61,9 @@ export class OrderResolver {
   }
 
   @Subscription(returns => String)
-  readyPotato() {
+  @Role(['Any'])
+  readyPotato(@AuthUser() user: User) {
+    console.log(user);
     // trigger name of `highPotatos`
     return pubsub.asyncIterator('highPotato');
   }

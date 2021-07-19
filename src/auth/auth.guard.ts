@@ -23,6 +23,7 @@ export class AuthGuard implements CanActivate {
     // this HTTP context is different from our GraphQL context
     // line of code below converts the executioncontext of nestjs into gql context
     const gqlContext = GqlExecutionContext.create(context).getContext();
+    console.log(gqlContext.token);
     // if there is metadata, we expect there to be a user for our private resolver
     const user: User = gqlContext['user'];
     if (!user) {
