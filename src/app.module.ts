@@ -29,10 +29,13 @@ import { OrderItem } from './orders/entities/order-item.entity';
       playground: process.env.NODE_ENV !== 'production',
       installSubscriptionHandlers: true,
       autoSchemaFile: true,
-      context: ({ req }) => {
+      context: ({ req, connection }) => {
         // is this the source of the N+1 problem...? idk..
-        // console.log(req);
-        return { user: req['user'] };
+        if (req) {
+          return { user: req['user'] };
+        } else {
+          console.log(connection);
+        }
       },
     }),
     ConfigModule.forRoot({

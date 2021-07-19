@@ -52,8 +52,17 @@ export class OrderResolver {
     return this.orderService.editOrder(user, editOrderInput);
   }
 
+  @Mutation(returns => Boolean)
+  potatoReady() {
+    pubsub.publish('highPotato', {
+      readyPotato: 'Your high potato is ready!!',
+    });
+    return true;
+  }
+
   @Subscription(returns => String)
-  orderSubscription() {
-    return pubsub.asyncIterator('highPotatos');
+  readyPotato() {
+    // trigger name of `highPotatos`
+    return pubsub.asyncIterator('highPotato');
   }
 }
