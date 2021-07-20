@@ -56,14 +56,15 @@ export class OrderResolver {
   }
 
   @Subscription(returns => Order, {
-    filter: (payload, _, context) => {
-      console.log(payload, context);
-      return true;
+    // recall that the first argument is what we set to return from the publisher in our resolver
+    filter: ({ pendingOrders: { ownerId } }, _, { user }) => {
+      // console.log(payload, context);
+      return ownerId === user.id;
     },
+    resolve: ({ pendingOrders: { order } }) => order,
   })
   @Role(['Owner'])
   pendingOrders() {
     return this.pubSub.asyncIterator(NEW_PENDING_ORDER);
   }
-
 }
