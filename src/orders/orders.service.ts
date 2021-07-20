@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PubSub } from "graphql-subscriptions";
-import { NEW_PENDING_ORDER, PUB_SUB } from "src/common/common.constants";
+import { NEW_COOKED_ORDER, NEW_PENDING_ORDER, PUB_SUB } from "src/common/common.constants";
 import { Dish } from "src/restaurants/entities/dish.entity";
 import { Restaurant } from "src/restaurants/entities/restaurant.entity";
 import { User, UserRole } from "src/users/entities/user.entity";
@@ -127,9 +127,9 @@ export class OrderService {
           relations: ['orders'],
         });
         // only get orders of restaurants that have orders... (some restaurants might not have any orders)
-        orders = restaurants.map(restaurant => restaurant.orders).flat(1); //.flat(1)
+        orders = restaurants.map((restaurant) => restaurant.orders).flat(1); //.flat(1)
         if (status) {
-          orders = orders.filter(order => order.status === status);
+          orders = orders.filter((order) => order.status === status);
         }
       }
       // console.log(orders);
@@ -151,6 +151,24 @@ export class OrderService {
       canSee = false;
     }
     return canSee;
+  }
+
+  canEditOrder(user: User, status: OrderStatus): boolean {
+    let canEdit = true;
+    if (user.role === UserRole.Client) {
+      canEdit = false;
+    }
+    if (user.role === UserRole.Owner) {
+      if (status !== OrderStatus.Cooking && status !== OrderStatus.Cooked) {
+        canEdit = false;
+      }
+    }
+    if (user.role === UserRole.Delivery) {
+      if (status !== OrderStatus.PickedUp && status !== OrderStatus.Delivered) {
+        canEdit = false;
+      }
+    }
+    return canEdit;
   }
 
   async getOrder(
@@ -187,27 +205,18 @@ export class OrderService {
       if (!this.canSeeOrder(user, order)) {
         return { ok: false, error: 'You can not see that' };
       }
-      let canEdit = true;
-      if (user.role === UserRole.Client) {
-        canEdit = false;
-      }
-      if (user.role === UserRole.Owner) {
-        if (status !== OrderStatus.Cooking && status !== OrderStatus.Cooked) {
-          canEdit = false;
-        }
-      }
-      if (user.role === UserRole.Delivery) {
-        if (
-          status !== OrderStatus.PickedUp &&
-          status !== OrderStatus.Delivered
-        ) {
-          canEdit = false;
-        }
-      }
-      if (!canEdit) {
+      if (!this.canEditOrder(user, status)) {
         return { ok: false, error: 'You can not do that' };
       }
       await this.orders.save([{ id: orderId, status }]);
+      if (user.role === UserRole.Owner) {
+        if (status === OrderStatus.Cooked) {
+          await this.pubSub.publish(NEW_COOKED_ORDER, {
+            // this makes sure the order we are publishing has the updated status
+            cookedOrders: { ...order, status },
+          });
+        }
+      }
       return { ok: true };
     } catch (err) {
       return { ok: false, error: 'Could not edit order' };
