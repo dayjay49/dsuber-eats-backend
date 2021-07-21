@@ -16,7 +16,6 @@ export class PaymentService {
     private readonly payments: Repository<Payment>,
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
-    private schedulerRegistry: SchedulerRegistry,
   ) {}
 
   async createPayment(
@@ -31,6 +30,13 @@ export class PaymentService {
       if (restaurant.ownerId !== owner.id) {
         return { ok: false, error: 'You are not allowed to do this' };
       }
+      restaurant.isPromoted = true;
+      const date = new Date();
+      // promotion for 7 days from payment date
+      date.setDate(date.getDate() + 7);
+      restaurant.promotedUntil = date;
+      this.restaurants.save(restaurant);
+      
       await this.payments.save(
         this.payments.create({
           transactionId,
@@ -53,23 +59,4 @@ export class PaymentService {
     }
   }
 
-  @Cron('30 * * * * *', {
-    name: 'myJob',
-  })
-  checkForPayments() {
-    console.log('---------CHECKING FOR PAYMENTS---------(cron)');
-    const job = this.schedulerRegistry.getCronJob('myJob');
-    console.log(job);
-    job.stop();
-  }
-  
-  @Interval(5000)
-  checksForPayments() {
-    console.log('---------CHECKING FOR PAYMENTS---------(interval)');
-  }
-
-  @Timeout(20000)
-  afterStarts() {
-    console.log("AFTER!!!");
-  }
 }
