@@ -3,8 +3,11 @@ import { Cron, Interval, SchedulerRegistry, Timeout } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Restaurant } from "src/restaurants/entities/restaurant.entity";
 import { User } from "src/users/entities/user.entity";
-import { Repository } from "typeorm";
-import { CreatePaymentInput, CreatePaymentOutput } from "./dtos/create-payment.dto";
+import { LessThan, Repository } from "typeorm";
+import {
+  CreatePaymentInput,
+  CreatePaymentOutput,
+} from "./dtos/create-payment.dto";
 import { GetPaymentsOutput } from "./dtos/get-payments.dto";
 import { Payment } from "./entities/payment.entity";
 
@@ -59,4 +62,17 @@ export class PaymentService {
     }
   }
 
+  @Interval(2000)
+  async checkPromotedRestaurants() {
+    const restaurants = await this.restaurants.find({
+      isPromoted: true,
+      promotedUntil: LessThan(new Date()),
+    });
+    // console.log(restaurants);
+    restaurants.forEach(async (restaurant) => {
+      restaurant.isPromoted = false;
+      restaurant.promotedUntil = null;
+      await this.restaurants.save(restaurant);
+    });
+  }
 }
