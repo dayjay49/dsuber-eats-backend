@@ -21,7 +21,7 @@ export class MailService {
     form.append('from',
     `David from Dsuber Eats <mailgun@${this.options.emailDomain}>`,
     );
-    form.append('to', `dsbnb2021@gmail.com`);
+    form.append('to', `dsubereats2021@gmail.com`);
     form.append('subject', subject);
     form.append('template', template);
     emailVars.forEach((variable) =>
