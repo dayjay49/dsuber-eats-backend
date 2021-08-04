@@ -24,7 +24,10 @@ import { Category } from './entities/category.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { CategoryRepository } from './repositories/category.repository';
 import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dto';
-import { SearchRestaurantInput, SearchRestaurantOutput } from './dtos/search-restaurant.dto';
+import {
+  SearchRestaurantInput,
+  SearchRestaurantOutput,
+} from './dtos/search-restaurant.dto';
 import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dto';
 import { Dish } from './entities/dish.entity';
 import { EditDishInput, EditDishOutput } from './dtos/edit-dish.dto';
@@ -168,6 +171,7 @@ export class RestaurantService {
         restaurants,
         category,
         totalPages: Math.ceil(totalResults / 25),
+        totalResults,
       };
     } catch (err) {
       return { ok: false, error: 'Could not load category' };
