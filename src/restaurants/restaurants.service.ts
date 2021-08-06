@@ -159,18 +159,23 @@ export class RestaurantService {
         where: {
           category,
         },
-        take: 25,
-        skip: (page - 1) * 25,
+        take: 3,
+        skip: (page - 1) * 3,
         order: {
           isPromoted: 'DESC',
         },
       });
-      const totalResults = await this.countRestaurants(category);
+      let totalResults = await this.countRestaurants(category);
+      // Making sure that the front end shows page 1 when there is no result
+      if (totalResults === 0) {
+        totalResults = 1;
+      };
+
       return {
         ok: true,
         restaurants,
         category,
-        totalPages: Math.ceil(totalResults / 25),
+        totalPages: Math.ceil(totalResults / 3),
         totalResults,
       };
     } catch (err) {
